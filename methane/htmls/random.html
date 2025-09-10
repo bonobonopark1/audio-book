@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI 및 성별 균형 조 편성기</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; line-height: 1.6; background-color: #eef2f7; color: #333; }
+        .container { max-width: 800px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #2c3e50; }
+        p { text-align: center; color: #555; }
+        .input-section { margin-bottom: 25px; }
+        .input-section label { display: block; margin-bottom: 10px; font-weight: bold; color: #2c3e50; }
+        .input-section textarea { width: 100%; height: 250px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; resize: vertical; box-sizing: border-box; }
+        .input-section input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
+        .input-section button { display: block; width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.3s, transform 0.1s; margin-top: 15px; }
+        .input-section button:hover { background-color: #2980b9; }
+        .input-section button:active { transform: scale(0.99); }
+        .results { margin-top: 40px; }
+        .group { border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #fafafa; }
+        .group h3 { margin-top: 0; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .group p { margin: 8px 0; text-align: left; }
+        .group ul { list-style: none; padding-left: 0; margin-top: 10px; }
+        .group li { background-color: #ecf0f1; padding: 8px 12px; border-radius: 4px; margin-bottom: 5px; }
+        .error { color: #e74c3c; text-align: center; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>MBTI 및 성별 균형 조 편성기</h1>
+        <p>학생들의 이름, 성별, MBTI 정보를 입력하고 조 인원을 설정해 균형 잡힌 조를 편성하세요.</p>
+        
+        <div class="input-section">
+            <label for="students-data">학생 데이터 입력 (JSON 형식):</label>
+            <textarea id="students-data">
+[
+    {"name": "김민준", "gender": "male", "mbti": "ENFJ"},
+    {"name": "이서연", "gender": "female", "mbti": "ISTP"},
+    {"name": "박도현", "gender": "male", "mbti": "INFP"},
+    {"name": "정유진", "gender": "female", "mbti": "ESTJ"},
+    {"name": "최민규", "gender": "male", "mbti": "ESFP"},
+    {"name": "김지은", "gender": "female", "mbti": "ISFJ"},
+    {"name": "윤성호", "gender": "male", "mbti": "ENTJ"},
+    {"name": "홍채은", "gender": "female", "mbti": "INFJ"},
+    {"name": "송민재", "gender": "male", "mbti": "ENFP"},
+    {"name": "한지수", "gender": "female", "mbti": "INTJ"},
+    {"name": "서준혁", "gender": "male", "mbti": "ESFJ"},
+    {"name": "장윤아", "gender": "female", "mbti": "ISTJ"},
+    {"name": "임재현", "gender": "male", "mbti": "ENTP"},
+    {"name": "고은별", "gender": "female", "mbti": "ISFP"},
+    {"name": "강현우", "gender": "male", "mbti": "INTP"},
+    {"name": "오서현", "gender": "female", "mbti": "ESTP"}
+]
+            </textarea>
+            <small>JSON 형식으로 데이터를 입력하세요. 예시와 같이 `name`, `gender`, `mbti` 키를 포함해야 합니다.</small>
+        </div>
+        
+        <div class="input-section">
+            <label for="group-size">한 조의 인원:</label>
+            <input type="number" id="group-size" value="4" min="2">
+        </div>
+
+        <button onclick="runGrouping()">조 편성 실행</button>
+
+        <div class="results" id="results">
+            </div>
+    </div>
+
+    <script>
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function calculateDiversityScore(group) {
+            if (group.length === 0) return 0;
+
+            const counts = { 'E': 0, 'I': 0, 'N': 0, 'S': 0, 'F': 0, 'T': 0, 'P': 0, 'J': 0 };
+            group.forEach(member => {
+                const mbti = member.mbti.toUpperCase();
+                counts[mbti[0]]++; counts[mbti[1]]++;
+                counts[mbti[2]]++; counts[mbti[3]]++;
+            });
+
+            let score = 0;
+            const mbtiPairs = [['E', 'I'], ['N', 'S'], ['F', 'T'], ['P', 'J']];
+            mbtiPairs.forEach(pair => {
+                const [char1, char2] = pair;
+                score += Math.min(counts[char1], counts[char2]) / Math.max(counts[char1], counts[char2], 1);
+            });
+            return score;
+        }
+
+        function formBalancedGroups(students, groupSize) {
+            shuffle(students);
+            
+            const numGroups = Math.floor(students.length / groupSize);
+            const groups = Array.from({ length: numGroups }, () => []);
+            const remainingStudents = [...students];
+
+            while (remainingStudents.length > 0) {
+                let minScoreGroupIndex = -1;
+                let minScore = Infinity;
+
+                for (let i = 0; i < groups.length; i++) {
+                    if (groups[i].length < groupSize) {
+                        const score = calculateDiversityScore(groups[i]);
+                        if (score < minScore) {
+                            minScore = score;
+                            minScoreGroupIndex = i;
+                        }
+                    }
+                }
+
+                if (minScoreGroupIndex === -1) {
+                    if (groups.length > 0) {
+                        groups[groups.length - 1].push(remainingStudents.shift());
+                    } else {
+                        break;
+                    }
+                } else {
+                    groups[minScoreGroupIndex].push(remainingStudents.shift());
+                }
+            }
+            return groups;
+        }
+
+        function runGrouping() {
+            const studentsDataInput = document.getElementById('students-data').value;
+            const groupSizeInput = document.getElementById('group-size').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            try {
+                const students = JSON.parse(studentsDataInput);
+                const groupSize = parseInt(groupSizeInput);
+
+                if (isNaN(groupSize) || groupSize < 1) {
+                    resultsDiv.innerHTML = '<p class="error">조 인원은 1 이상의 숫자로 입력해야 합니다.</p>';
+                    return;
+                }
+                if (students.length === 0) {
+                    resultsDiv.innerHTML = '<p class="error">학생 데이터가 없습니다.</p>';
+                    return;
+                }
+
+                const formedGroups = formBalancedGroups(students, groupSize);
+
+                formedGroups.forEach((group, index) => {
+                    const groupDiv = document.createElement('div');
+                    groupDiv.classList.add('group');
+                    
+                    const groupTitle = document.createElement('h3');
+                    groupTitle.textContent = `제 ${index + 1}조 (총 ${group.length}명)`;
+                    groupDiv.appendChild(groupTitle);
+
+                    let maleCount = 0;
+                    let femaleCount = 0;
+                    const mbtiCounts = { 'E': 0, 'I': 0, 'N': 0, 'S': 0, 'F': 0, 'T': 0, 'P': 0, 'J': 0 };
+
+                    group.forEach(member => {
+                        if (member.gender === 'male') maleCount++; else femaleCount++;
+                        const mbti = member.mbti.toUpperCase();
+                        mbtiCounts[mbti[0]]++; mbtiCounts[mbti[1]]++;
+                        mbtiCounts[mbti[2]]++; mbtiCounts[mbti[3]]++;
+                    });
+
+                    const diversityScore = calculateDiversityScore(group);
+
+                    groupDiv.innerHTML += `<p><strong>성별:</strong> 남 ${maleCount}명, 여 ${femaleCount}명</p>`;
+                    groupDiv.innerHTML += `<p><strong>MBTI:</strong> E(${mbtiCounts['E']})/I(${mbtiCounts['I']}), N(${mbtiCounts['N']})/S(${mbtiCounts['S']}), F(${mbtiCounts['F']})/T(${mbtiCounts['T']}), P(${mbtiCounts['P']})/J(${mbtiCounts['J']})</p>`;
+                    groupDiv.innerHTML += `<p><strong>다양성 점수:</strong> ${diversityScore.toFixed(2)}</p>`;
+
+                    const memberList = document.createElement('ul');
+                    group.forEach(member => {
+                        const memberItem = document.createElement('li');
+                        memberItem.textContent = `${member.name} (${member.gender}, ${member.mbti})`;
+                        memberList.appendChild(memberItem);
+                    });
+                    groupDiv.appendChild(memberList);
+                    resultsDiv.appendChild(groupDiv);
+                });
+
+            } catch (e) {
+                resultsDiv.innerHTML = `<p class="error">잘못된 JSON 형식의 데이터입니다. 오류: ${e.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
