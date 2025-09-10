@@ -3,37 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MBTI 및 성별 균형 조 편성기</title>
+    <title>MBTI 및 성별 균형 조 편성기 (Pro)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; line-height: 1.6; background-color: #eef2f7; color: #333; }
-        .container { max-width: 800px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        h1, h2 { text-align: center; color: #2c3e50; }
-        p { text-align: center; color: #555; }
-        .input-section { margin-bottom: 25px; }
-        .input-section label { display: block; margin-bottom: 10px; font-weight: bold; color: #2c3e50; }
-        .input-section textarea { width: 100%; height: 250px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; resize: vertical; box-sizing: border-box; }
-        .input-section input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; margin-top: 5px; box-sizing: border-box; }
-        .input-section button { display: block; width: 100%; padding: 15px; background-color: #3498db; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background-color 0.3s, transform 0.1s; margin-top: 15px; }
-        .input-section button:hover { background-color: #2980b9; }
-        .input-section button:active { transform: scale(0.99); }
-        .results { margin-top: 40px; }
-        .group { border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 8px; background: #fafafa; }
-        .group h3 { margin-top: 0; color: #34495e; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        .group p { margin: 8px 0; text-align: left; }
-        .group ul { list-style: none; padding-left: 0; margin-top: 10px; }
-        .group li { background-color: #ecf0f1; padding: 8px 12px; border-radius: 4px; margin-bottom: 5px; }
-        .error { color: #e74c3c; text-align: center; font-weight: bold; margin-top: 20px; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 800px;
+        }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
 
-    <div class="container">
-        <h1>MBTI 및 성별 균형 조 편성기</h1>
-        <p>학생들의 이름, 성별, MBTI 정보를 입력하고 조 인원을 설정해 균형 잡힌 조를 편성하세요.</p>
-        
-        <div class="input-section">
-            <label for="students-data">학생 데이터 입력 (JSON 형식):</label>
-            <textarea id="students-data">
+    <div class="container bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-200">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">👨‍👩‍👧‍👦 조 편성기</h1>
+            <p class="text-gray-500 text-lg mb-8">
+                학생들의 MBTI 및 성별 정보를 기반으로 균형 잡힌 조를 편성해 보세요.
+            </p>
+        </div>
+
+        <div class="space-y-6">
+            <div class="input-section">
+                <label for="students-data" class="block text-sm font-bold text-gray-700 mb-2">
+                    학생 데이터 입력
+                </label>
+                <textarea id="students-data" class="w-full h-64 p-4 text-sm text-gray-800 bg-gray-50 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all resize-none" placeholder="JSON 형식으로 입력하세요.">
 [
     {"name": "김민준", "gender": "male", "mbti": "ENFJ"},
     {"name": "이서연", "gender": "female", "mbti": "ISTP"},
@@ -52,22 +49,43 @@
     {"name": "강현우", "gender": "male", "mbti": "INTP"},
     {"name": "오서현", "gender": "female", "mbti": "ESTP"}
 ]
-            </textarea>
-            <small>JSON 형식으로 데이터를 입력하세요. 예시와 같이 `name`, `gender`, `mbti` 키를 포함해야 합니다.</small>
-        </div>
-        
-        <div class="input-section">
-            <label for="group-size">한 조의 인원:</label>
-            <input type="number" id="group-size" value="4" min="2">
-        </div>
-
-        <button onclick="runGrouping()">조 편성 실행</button>
-
-        <div class="results" id="results">
+                </textarea>
+                <small class="text-gray-400 mt-1 block">이름, 성별, MBTI를 포함하는 JSON 형식의 배열을 입력하세요.</small>
             </div>
+            
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                <div class="input-section flex-1">
+                    <label for="group-size" class="block text-sm font-bold text-gray-700 mb-2">
+                        한 조의 인원
+                    </label>
+                    <input type="number" id="group-size" value="4" min="2" class="w-full p-4 text-sm text-gray-800 bg-gray-50 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all">
+                </div>
+                <div class="input-section flex-1">
+                    <label for="grouping-method" class="block text-sm font-bold text-gray-700 mb-2">
+                        편성 방법
+                    </label>
+                    <select id="grouping-method" class="w-full p-4 text-sm text-gray-800 bg-gray-50 border border-gray-300 rounded-xl focus:ring-blue-500 focus:border-blue-500 transition-all">
+                        <option value="balanced">MBTI & 성별 균형 편성 (권장)</option>
+                        <option value="random">무작위 편성</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="runGrouping()" class="w-full px-6 py-4 text-white text-lg font-bold bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 transform hover:-translate-y-1 transition-all duration-300 ease-in-out">
+                조 편성 실행
+            </button>
+        </div>
+
+        <div id="results" class="mt-12 space-y-8">
+            <!-- 결과가 여기에 표시됩니다 -->
+        </div>
     </div>
 
     <script>
+        /**
+         * 배열의 요소를 무작위로 섞습니다.
+         * @param {Array} array - 섞을 배열.
+         */
         function shuffle(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -75,25 +93,42 @@
             }
         }
 
+        /**
+         * 조 내의 MBTI 다양성 점수를 계산합니다.
+         * MBTI 항목별(E/I, N/S, F/T, P/J) 균형이 좋을수록 점수가 높습니다.
+         * @param {Array<Object>} group - 학생 객체들의 배열.
+         * @returns {number} - 다양성 점수.
+         */
         function calculateDiversityScore(group) {
             if (group.length === 0) return 0;
 
             const counts = { 'E': 0, 'I': 0, 'N': 0, 'S': 0, 'F': 0, 'T': 0, 'P': 0, 'J': 0 };
             group.forEach(member => {
                 const mbti = member.mbti.toUpperCase();
-                counts[mbti[0]]++; counts[mbti[1]]++;
-                counts[mbti[2]]++; counts[mbti[3]]++;
+                if (mbti.length === 4) {
+                    counts[mbti[0]]++; counts[mbti[1]]++;
+                    counts[mbti[2]]++; counts[mbti[3]]++;
+                }
             });
 
             let score = 0;
             const mbtiPairs = [['E', 'I'], ['N', 'S'], ['F', 'T'], ['P', 'J']];
             mbtiPairs.forEach(pair => {
                 const [char1, char2] = pair;
-                score += Math.min(counts[char1], counts[char2]) / Math.max(counts[char1], counts[char2], 1);
+                const total = counts[char1] + counts[char2];
+                if (total > 0) {
+                    score += Math.min(counts[char1], counts[char2]) / Math.max(counts[char1], counts[char2], 1);
+                }
             });
             return score;
         }
 
+        /**
+         * 성별과 MBTI 균형을 고려하여 조를 편성합니다.
+         * @param {Array<Object>} students - 전체 학생 객체들의 배열.
+         * @param {number} groupSize - 한 조의 인원.
+         * @returns {Array<Array<Object>>} - 편성된 조들의 배열.
+         */
         function formBalancedGroups(students, groupSize) {
             shuffle(students);
             
@@ -117,10 +152,10 @@
 
                 if (minScoreGroupIndex === -1) {
                     if (groups.length > 0) {
-                        groups[groups.length - 1].push(remainingStudents.shift());
-                    } else {
-                        break;
+                        // 남은 인원은 마지막 조에 추가
+                        groups[groups.length - 1].push(...remainingStudents);
                     }
+                    break;
                 } else {
                     groups[minScoreGroupIndex].push(remainingStudents.shift());
                 }
@@ -128,9 +163,29 @@
             return groups;
         }
 
+        /**
+         * 조를 무작위로 편성합니다.
+         * @param {Array<Object>} students - 전체 학생 객체들의 배열.
+         * @param {number} groupSize - 한 조의 인원.
+         * @returns {Array<Array<Object>>} - 편성된 조들의 배열.
+         */
+        function formRandomGroups(students, groupSize) {
+            shuffle(students);
+            const groups = [];
+            for (let i = 0; i < students.length; i += groupSize) {
+                const group = students.slice(i, i + groupSize);
+                groups.push(group);
+            }
+            return groups;
+        }
+
+        /**
+         * 조 편성 프로그램을 실행하고 결과를 화면에 표시합니다.
+         */
         function runGrouping() {
             const studentsDataInput = document.getElementById('students-data').value;
             const groupSizeInput = document.getElementById('group-size').value;
+            const groupingMethod = document.getElementById('grouping-method').value;
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = '';
 
@@ -139,22 +194,32 @@
                 const groupSize = parseInt(groupSizeInput);
 
                 if (isNaN(groupSize) || groupSize < 1) {
-                    resultsDiv.innerHTML = '<p class="error">조 인원은 1 이상의 숫자로 입력해야 합니다.</p>';
+                    resultsDiv.innerHTML = '<div class="error p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold">조 인원은 1 이상의 숫자로 입력해야 합니다.</div>';
                     return;
                 }
                 if (students.length === 0) {
-                    resultsDiv.innerHTML = '<p class="error">학생 데이터가 없습니다.</p>';
+                    resultsDiv.innerHTML = '<div class="error p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold">학생 데이터가 없습니다.</div>';
+                    return;
+                }
+                if (students.length < groupSize) {
+                    resultsDiv.innerHTML = '<div class="error p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold">총 학생 수가 조 인원보다 적습니다.</div>';
                     return;
                 }
 
-                const formedGroups = formBalancedGroups(students, groupSize);
+                let formedGroups;
+                if (groupingMethod === 'balanced') {
+                    formedGroups = formBalancedGroups(students, groupSize);
+                } else {
+                    formedGroups = formRandomGroups(students, groupSize);
+                }
 
                 formedGroups.forEach((group, index) => {
                     const groupDiv = document.createElement('div');
-                    groupDiv.classList.add('group');
+                    groupDiv.classList.add('group', 'bg-white', 'rounded-xl', 'shadow-md', 'p-6');
                     
                     const groupTitle = document.createElement('h3');
                     groupTitle.textContent = `제 ${index + 1}조 (총 ${group.length}명)`;
+                    groupTitle.classList.add('text-xl', 'font-semibold', 'text-gray-800', 'border-b', 'border-blue-500', 'pb-2', 'mb-4');
                     groupDiv.appendChild(groupTitle);
 
                     let maleCount = 0;
@@ -162,22 +227,64 @@
                     const mbtiCounts = { 'E': 0, 'I': 0, 'N': 0, 'S': 0, 'F': 0, 'T': 0, 'P': 0, 'J': 0 };
 
                     group.forEach(member => {
-                        if (member.gender === 'male') maleCount++; else femaleCount++;
+                        if (member.gender.toLowerCase() === 'male') maleCount++; else femaleCount++;
                         const mbti = member.mbti.toUpperCase();
-                        mbtiCounts[mbti[0]]++; mbtiCounts[mbti[1]]++;
-                        mbtiCounts[mbti[2]]++; mbtiCounts[mbti[3]]++;
+                        if (mbti.length === 4) {
+                            mbtiCounts[mbti[0]]++; mbtiCounts[mbti[1]]++;
+                            mbtiCounts[mbti[2]]++; mbtiCounts[mbti[3]]++;
+                        }
                     });
 
                     const diversityScore = calculateDiversityScore(group);
 
-                    groupDiv.innerHTML += `<p><strong>성별:</strong> 남 ${maleCount}명, 여 ${femaleCount}명</p>`;
-                    groupDiv.innerHTML += `<p><strong>MBTI:</strong> E(${mbtiCounts['E']})/I(${mbtiCounts['I']}), N(${mbtiCounts['N']})/S(${mbtiCounts['S']}), F(${mbtiCounts['F']})/T(${mbtiCounts['T']}), P(${mbtiCounts['P']})/J(${mbtiCounts['J']})</p>`;
-                    groupDiv.innerHTML += `<p><strong>다양성 점수:</strong> ${diversityScore.toFixed(2)}</p>`;
+                    const statsHtml = `
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-blue-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm-2 11h4v-2h-4v2zm-2-4h8v-2h-8v2z"></path></svg>
+                                </span>
+                                <span>남: ${maleCount}, 여: ${femaleCount}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-green-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                </span>
+                                <span>E/I: ${mbtiCounts['E']}/${mbtiCounts['I']}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-purple-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM12 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM12 20c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                                </span>
+                                <span>N/S: ${mbtiCounts['N']}/${mbtiCounts['S']}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-yellow-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-6H8.5V9h2V7h-2V5h4v2h2v2h-2v4h4v2H11v2z"></path></svg>
+                                </span>
+                                <span>F/T: ${mbtiCounts['F']}/${mbtiCounts['T']}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-red-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM12 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM12 20c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                                </span>
+                                <span>P/J: ${mbtiCounts['P']}/${mbtiCounts['J']}</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-gray-500">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM12 12c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM12 20c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                                </span>
+                                <span>다양성 점수: ${diversityScore.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    `;
+                    groupDiv.innerHTML += statsHtml;
 
                     const memberList = document.createElement('ul');
+                    memberList.classList.add('space-y-2');
                     group.forEach(member => {
                         const memberItem = document.createElement('li');
                         memberItem.textContent = `${member.name} (${member.gender}, ${member.mbti})`;
+                        memberItem.classList.add('bg-gray-100', 'p-3', 'rounded-lg', 'font-medium', 'text-gray-700', 'transition-all', 'hover:bg-gray-200');
                         memberList.appendChild(memberItem);
                     });
                     groupDiv.appendChild(memberList);
@@ -185,9 +292,10 @@
                 });
 
             } catch (e) {
-                resultsDiv.innerHTML = `<p class="error">잘못된 JSON 형식의 데이터입니다. 오류: ${e.message}</p>`;
+                resultsDiv.innerHTML = `<div class="error p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg text-center font-bold">잘못된 JSON 형식의 데이터입니다. 오류: ${e.message}</div>`;
             }
         }
     </script>
 </body>
 </html>
+
