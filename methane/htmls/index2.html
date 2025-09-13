@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>좌우의 그림자 게임</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #2c3e50; /* Dark blue background */
+            color: #ecf0f1; /* Light grey text */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #34495e; /* Slightly lighter dark blue */
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        h1 {
+            color: #f1c40f; /* Yellow accent color */
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 0.5em;
+        }
+        .game-status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #7f8c8d;
+            font-size: 1.1em;
+            line-height: 1.5;
+            transition: background-color 0.3s;
+        }
+        .game-status.default {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+        .game-status.warning {
+            background-color: #c0392b;
+            border-color: #e74c3c;
+            color: #ecf0f1;
+            font-weight: bold;
+        }
+        .player-hand, .play-area {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .play-area {
+            min-height: 100px;
+            align-items: center;
+            background-color: #293441; /* Even darker blue */
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .card {
+            background-color: #ecf0f1;
+            border: 2px solid #7f8c8d;
+            color: #34495e;
+            border-radius: 8px;
+            width: 60px;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        }
+        .card.active-rule {
+            border-color: #f39c12; /* Orange accent */
+            box-shadow: 0 0 10px #f39c12;
+        }
+        .card.selected {
+            background-color: #f1c40f;
+            color: #2c3e50;
+            border-color: #f1c40f;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .controls h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s, opacity 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button.submit-btn {
+            background-color: #27ae60; /* Green submit button */
+            color: white;
+        }
+        button.submit-btn:disabled {
+            background-color: #7f8c8d;
+            opacity: 0.5; /* Disabled state is semi-transparent */
+            cursor: not-allowed;
+        }
+        button.acquire-btn {
+            background-color: #95a5a6;
+            color: white;
+        }
+        button.cancel-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        button.start-btn {
+            background-color: #f1c40f;
+            color: #34495e;
+            padding: 15px 30px;
+            font-size: 1.2em;
+        }
+        
+        /* 새로운 모달 스타일 */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #34495e;
+            color: #ecf0f1;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            text-align: center;
+            max-width: 80%;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 99;
+            display: none;
+        }
+        .modal input[type="text"] {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #7f8c8d;
+            text-align: center;
+            font-size: 1.2em;
+            background-color: #4a6176;
+            color: #ecf0f1;
+        }
+        .hidden {
+            display: none !important;
+        }
+
+        /* Submit button animation */
+        @keyframes pulse-yellow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(241, 196, 15, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 15px 5px rgba(241, 196, 15, 0.9);
+            }
+        }
+        
+        .submit-btn.pulse {
+            animation: pulse-yellow 1s infinite;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            h1 { font-size: 2em; }
+            .card { width: 45px; height: 70px; font-size: 1.2em; }
+            .play-area { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; }
+            .button-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>좌우의 그림자</h1>
+
+    <div class="game-status" id="game-status">
+        <div id="player-turn"></div>
+        <div id="game-message"></div>
+    </div>
+
+    <div class="play-area" id="play-area">
+        <!-- 필드 카드들이 여기에 표시됩니다 -->
+    </div>
+
+    <div class="player-hand-container">
+        <h3>내 패</h3>
+        <div class="player-hand" id="player-hand">
+            <!-- 현재 플레이어의 패가 여기에 표시됩니다 -->
+        </div>
+    </div>
+
+    <div class="controls">
+        <h3>행동 선택</h3>
+        <div class="button-group" id="action-buttons">
+            <button class="submit-btn" id="submit-card-btn" disabled>카드 제출</button>
+            <button class="acquire-btn hidden" id="acquire-card-btn">카드 획득</button>
+        </div>
+        <div id="position-buttons" class="button-group hidden">
+            <button class="submit-btn" data-position="left">좌측</button>
+            <button class="submit-btn" data-position="right">우측</button>
+            <button class="cancel-btn" id="cancel-btn">취소</button>
+        </div>
+        <div id="start-game-btn-container">
+            <button class="start-btn" id="start-game-btn">게임 시작</button>
+        </div>
+    </div>
+</div>
+
+<!-- 범용 모달 -->
+<div class="modal-overlay hidden"></div>
+<div id="game-modal" class="modal hidden">
+    <p id="modal-text"></p>
+    <div class="modal-controls">
+        <input type="text" id="modal-input" placeholder="카드 번호 입력" class="hidden">
+        <div id="modal-buttons" class="button-group">
+            <button id="modal-ok-btn">확인</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    class CardGame {
+        constructor(num_players = 3) {
+            if (num_players < 2 || num_players > 4) {
+                throw new Error("플레이어는 2명에서 4명까지 가능합니다.");
+            }
+            this.num_players = num_players;
+            this.deck = this.createDeck();
+            this.players = Array.from({length: this.num_players}, (_, i) => `플레이어 ${i + 1}`);
+            this.hands = this.dealCards();
+            this.play_area = [];
+            this.direction = 1;
+            this.currentPlayerIndex = 0;
+            this.setCentralCard();
+        }
+
+        createDeck() {
+            const deck = Array.from({length: 100}, (_, i) => i + 1).flatMap(x => [x, x]);
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+            return deck;
+        }
+
+        dealCards() {
+            const hands = {};
+            for (const player of this.players) {
+                hands[player] = this.deck.splice(0, 10);
+            }
+            return hands;
+        }
+
+        setCentralCard() {
+            while (true) {
+                const card = this.deck.shift();
+                if (card >= 10 && card <= 99) {
+                    this.play_area.push(card);
+                    return;
+                }
+                this.deck.push(card);
+            }
+        }
+
+        getDigits(card) {
+            if (card < 10) return {ten: 0, one: card};
+            return {ten: Math.floor(card / 10), one: card % 10};
+        }
+
+        isValidPlay(card, position) {
+            if (!this.play_area.length) return true;
+            
+            if (card < 10 || card % 10 === 0) return true;
+
+            const leftmostCard = this.play_area[0];
+            const rightmostCard = this.play_area[this.play_area.length - 1];
+            const tenDigit = this.getDigits(card).ten;
+            const oneDigit = this.getDigits(card).one;
+
+            if (position === 'left' && oneDigit === this.getDigits(leftmostCard).ten) {
+                return true;
+            }
+            if (position === 'right' && tenDigit === this.getDigits(rightmostCard).one) {
+                return true;
+            }
+            return false;
+        }
+
+        checkForPlayableCards(playerHand) {
+            if (!this.play_area.length) return true;
+            const leftmostCard = this.play_area[0];
+            const rightmostCard = this.play_area[this.play_area.length - 1];
+            const leftRuleDigit = this.getDigits(leftmostCard).ten;
+            const rightRuleDigit = this.getDigits(rightmostCard).one;
+
+            return playerHand.some(card => {
+                if (card < 10 || card % 10 === 0) return true;
+                const { ten, one } = this.getDigits(card);
+                return one === leftRuleDigit || ten === rightRuleDigit;
+            });
+        }
+    }
+
+    // 전역 변수 및 DOM 요소 선언
+    let game;
+    let selectedCard = null;
+    let playerTurnEl, gameMessageEl, playAreaEl, playerHandEl, submitCardBtn, acquireCardBtn, actionButtons, positionButtons, startGameBtnContainer, gameModal, modalOverlay, modalText, modalInput, modalButtons, startGameBtn, cancelBtn, gameStatusEl;
+    
+    // DOM이 완전히 로드된 후에 실행되도록 합니다.
+    window.onload = function() {
+        // 모든 DOM 요소를 변수에 할당합니다.
+        playerTurnEl = document.getElementById('player-turn');
+        gameMessageEl = document.getElementById('game-message');
+        playAreaEl = document.getElementById('play-area');
+        playerHandEl = document.getElementById('player-hand');
+        submitCardBtn = document.getElementById('submit-card-btn');
+        acquireCardBtn = document.getElementById('acquire-card-btn');
+        actionButtons = document.getElementById('action-buttons');
+        positionButtons = document.getElementById('position-buttons');
+        startGameBtnContainer = document.getElementById('start-game-btn-container');
+        gameModal = document.getElementById('game-modal');
+        modalOverlay = document.querySelector('.modal-overlay');
+        modalText = document.getElementById('modal-text');
+        modalInput = document.getElementById('modal-input');
+        modalButtons = document.getElementById('modal-buttons');
+        startGameBtn = document.getElementById('start-game-btn');
+        cancelBtn = document.getElementById('cancel-btn');
+        gameStatusEl = document.getElementById('game-status');
+
+        // 카드 선택 함수
+        function selectCard(cardEl) {
+            if (selectedCard) {
+                selectedCard.classList.remove('selected');
+            }
+            selectedCard = cardEl;
+            selectedCard.classList.add('selected');
+            
+            // '카드 제출' 버튼 활성화 및 애니메이션 적용
+            submitCardBtn.disabled = false;
+            submitCardBtn.classList.add('pulse');
+            
+            // 게임 메시지에 안내 문구 추가
+            gameMessageEl.innerHTML = "<b>선택한 카드를 제출하려면 '카드 제출' 버튼을 누르세요.</b>";
+            
+            // '카드 획득' 버튼 숨기기
+            acquireCardBtn.classList.add('hidden');
+        }
+
+        // 모달 표시 함수
+        function showModal(text, buttonsHtml, showInput = false) {
+            modalText.textContent = text;
+            modalButtons.innerHTML = buttonsHtml;
+            modalInput.classList.toggle('hidden', !showInput);
+            if (showInput) modalInput.value = '';
+            gameModal.classList.remove('hidden');
+            modalOverlay.classList.remove('hidden');
+        }
+
+        // 모달 숨기기 함수
+        function hideModal() {
+            gameModal.classList.add('hidden');
+            modalOverlay.classList.add('hidden');
+        }
+
+        // 턴 진행
+        function nextTurn() {
+            if (!game) return;
+            game.currentPlayerIndex = (game.currentPlayerIndex + game.direction) % game.num_players;
+            updateUI();
+        }
+
+        // UI 업데이트 함수
+        function updateUI() {
+            if (!game) {
+                playerTurnEl.textContent = "게임을 시작해주세요.";
+                gameMessageEl.textContent = "";
+                playAreaEl.innerHTML = "";
+                playerHandEl.innerHTML = "";
+                actionButtons.classList.add('hidden');
+                acquireCardBtn.classList.add('hidden');
+                positionButtons.classList.add('hidden');
+                startGameBtnContainer.classList.remove('hidden');
+                gameStatusEl.className = 'game-status default';
+                return;
+            }
+
+            const currentPlayerName = game.players[game.currentPlayerIndex];
+            const currentPlayerHand = game.hands[currentPlayerName];
+            
+            playerTurnEl.innerHTML = `현재 턴: <b>${currentPlayerName}</b>`;
+
+            // 필드 카드 렌더링
+            playAreaEl.innerHTML = '';
+            game.play_area.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.textContent = card;
+                if (index === 0 || index === game.play_area.length - 1) {
+                    cardEl.classList.add('active-rule');
+                }
+                playAreaEl.appendChild(cardEl);
+            });
+
+            // 내 패 렌더링
+            playerHandEl.innerHTML = '';
+            currentPlayerHand.sort((a, b) => a - b).forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.textContent = card;
+                cardEl.dataset.cardValue = card;
+                cardEl.addEventListener('click', () => selectCard(cardEl));
+                playerHandEl.appendChild(cardEl);
+            });
+
+            // 낼 수 있는 카드 규칙 표시
+            const canPlay = game.checkForPlayableCards(currentPlayerHand);
+            if (game.play_area.length) {
+                const leftCard = game.play_area[0];
+                const rightCard = game.play_area[game.play_area.length - 1];
+                gameMessageEl.innerHTML = `규칙: 좌측 카드 <b>(${leftCard})</b>의 십의 자리(${game.getDigits(leftCard).ten})로 끝나는 카드나, <br>우측 카드 <b>(${rightCard})</b>의 일의 자리(${game.getDigits(rightCard).one})로 시작하는 카드를 내세요.`;
+            } else {
+                gameMessageEl.textContent = "규칙: 아무 카드나 내서 새로운 게임을 시작하세요.";
+            }
+
+            // 낼 수 있는 카드가 없을 때 처리
+            if (!canPlay && game.play_area.length) {
+                submitCardBtn.classList.add('hidden');
+                acquireCardBtn.classList.remove('hidden');
+                gameMessageEl.innerHTML = `<b>낼 수 있는 카드가 없습니다.</b><br>필드 좌/우측 카드 중 하나를 획득해야 합니다.`;
+                gameStatusEl.className = 'game-status warning';
+            } else {
+                submitCardBtn.classList.remove('hidden');
+                acquireCardBtn.classList.add('hidden');
+                gameStatusEl.className = 'game-status default';
+            }
+            
+            // 초기 상태에서는 버튼이 비활성화됨을 명시
+            if (!selectedCard) {
+                submitCardBtn.disabled = true;
+                submitCardBtn.classList.remove('pulse');
+            }
+            
+        }
+        
+        // 행동 선택 UI를 초기 상태로 되돌리는 함수
+        function resetActionButtons() {
+            submitCardBtn.classList.remove('hidden');
+            submitCardBtn.disabled = true;
+            acquireCardBtn.classList.add('hidden');
+            positionButtons.classList.add('hidden');
+            if (selectedCard) {
+                selectedCard.classList.remove('selected');
+                selectedCard = null;
+            }
+            // '카드 제출' 버튼의 애니메이션 효과 제거
+            submitCardBtn.classList.remove('pulse');
+            updateUI();
+        }
+
+        // 모든 이벤트 리스너를 추가합니다.
+        submitCardBtn.addEventListener('click', () => {
+            if (!selectedCard) {
+                showModal("제출할 카드를 먼저 선택해주세요.", `<button id="modal-ok-btn">확인</button>`);
+                document.getElementById('modal-ok-btn').addEventListener('click', hideModal);
+                return;
+            }
+            submitCardBtn.classList.add('hidden');
+            acquireCardBtn.classList.add('hidden');
+            positionButtons.classList.remove('hidden');
+            submitCardBtn.classList.remove('pulse'); // 애니메이션 효과 제거
+        });
+
+        positionButtons.addEventListener('click', (event) => {
+            if (event.target.tagName !== 'BUTTON') return;
+            
+            // Fix: Add a check to prevent errors if selectedCard is null
+            if (!selectedCard) {
+                console.warn("No card selected, but a position button was clicked. Resetting UI.");
+                resetActionButtons();
+                return;
+            }
+
+            const cardValue = parseInt(selectedCard.dataset.cardValue);
+            const position = event.target.dataset.position;
+
+            if (!game.isValidPlay(cardValue, position)) {
+                showModal("규칙에 맞지 않는 카드입니다. 다시 선택해주세요.", `<button id="modal-ok-btn">확인</button>`);
+                document.getElementById('modal-ok-btn').addEventListener('click', () => {
+                    hideModal();
+                    submitCardBtn.classList.remove('hidden');
+                    positionButtons.classList.add('hidden');
+                    resetActionButtons();
+                });
+                return;
+            }
+
+            const currentPlayerName = game.players[game.currentPlayerIndex];
+            const currentPlayerHand = game.hands[currentPlayerName];
+            currentPlayerHand.splice(currentPlayerHand.indexOf(cardValue), 1);
+
+            // 특수 카드 처리
+            if (cardValue < 10) {
+                game.direction *= -1;
+                game.play_area.push(cardValue);
+                showModal(`한 자리 숫자(${cardValue})! 게임 방향이 반대로 바뀝니다.`, `<button id="modal-ok-btn">확인</button>`);
+                document.getElementById('modal-ok-btn').addEventListener('click', () => {
+                    hideModal();
+                    if (currentPlayerHand.length === 0) {
+                        showModal(`축하합니다! '${currentPlayerName}'님이 승리했습니다!`, `<button id="modal-ok-btn">확인</button>`);
+                        startGameBtnContainer.classList.remove('hidden');
+                    } else {
+                        nextTurn();
+                    }
+                });
+            } else if (cardValue % 10 === 0) {
+                game.deck.push(...game.play_area);
+                game.play_area = [];
+                
+                showModal("10의 배수! 새로운 시작 카드를 손에서 선택하세요.", `<button id="modal-confirm-btn">확인</button>`, true);
+                document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+                    const newCardValue = parseInt(modalInput.value);
+                    if (currentPlayerHand.includes(newCardValue)) {
+                        currentPlayerHand.splice(currentPlayerHand.indexOf(newCardValue), 1);
+                        game.play_area.push(newCardValue);
+                        hideModal();
+                        updateUI();
+                        if (currentPlayerHand.length === 0) {
+                            showModal(`축하합니다! '${currentPlayerName}'님이 승리했습니다!`, `<button id="modal-ok-btn">확인</button>`);
+                            startGameBtnContainer.classList.remove('hidden');
+                        } else {
+                            nextTurn();
+                        }
+                    } else {
+                        showModal("손에 없는 카드입니다. 다시 선택해주세요.", `<button id="modal-ok-btn">확인</button>`);
+                        document.getElementById('modal-ok-btn').addEventListener('click', () => {
+                            hideModal();
+                            showModal("10의 배수! 새로운 시작 카드를 손에서 선택하세요.", `<button id="modal-confirm-btn">확인</button>`, true);
+                        });
+                    }
+                });
+
+            } else {
+                if (position === 'left') {
+                    game.play_area.unshift(cardValue);
+                } else {
+                    game.play_area.push(cardValue);
+                }
+                showModal(`'${currentPlayerName}'님이 ${cardValue}를 제출했습니다.`, `<button id="modal-ok-btn">확인</button>`);
+                document.getElementById('modal-ok-btn').addEventListener('click', () => {
+                    hideModal();
+                    if (currentPlayerHand.length === 0) {
+                        showModal(`축하합니다! '${currentPlayerName}'님이 승리했습니다!`, `<button id="modal-ok-btn">확인</button>`);
+                        startGameBtnContainer.classList.remove('hidden');
+                    } else {
+                        nextTurn();
+                    }
+                });
+            }
+
+            submitCardBtn.classList.remove('hidden');
+            positionButtons.classList.add('hidden');
+        });
+        
+        // '취소' 버튼 리스너 추가
+        cancelBtn.addEventListener('click', () => {
+            resetActionButtons();
+        });
+
+        acquireCardBtn.addEventListener('click', () => {
+            if (!game.play_area.length) return;
+            showModal("어떤 카드를 획득하시겠습니까?", `<button id="acquire-left-btn">좌측</button><button id="acquire-right-btn">우측</button>`);
+            
+            document.getElementById('acquire-left-btn').addEventListener('click', () => acquireCard('left'));
+            document.getElementById('acquire-right-btn').addEventListener('click', () => acquireCard('right'));
+        });
+
+        function acquireCard(position) {
+            hideModal();
+            const currentPlayerName = game.players[game.currentPlayerIndex];
+            let cardToAcquire;
+            if (position === 'left') {
+                cardToAcquire = game.play_area.shift();
+            } else {
+                cardToAcquire = game.play_area.pop();
+            }
+            
+            game.hands[currentPlayerName].push(cardToAcquire);
+            showModal(`'${currentPlayerName}'님이 ${cardToAcquire}를 획득했습니다.`, `<button id="modal-ok-btn">확인</button>`);
+            document.getElementById('modal-ok-btn').addEventListener('click', () => {
+                hideModal();
+                nextTurn();
+            });
+            acquireCardBtn.classList.add('hidden');
+        }
+
+        startGameBtn.addEventListener('click', () => {
+            game = new CardGame(3);
+            updateUI();
+            startGameBtnContainer.classList.add('hidden');
+            // 핵심 수정: 게임 시작 시 버튼 컨테이너가 보이도록 설정합니다.
+            actionButtons.classList.remove('hidden');
+        });
+
+        // 초기 화면 렌더링
+        updateUI();
+    }
+</script>
+</body>
+</html>
