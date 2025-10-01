@@ -15,7 +15,7 @@ def main():
 
     # HTML 파일의 경로를 설정합니다.
     # 사용자의 요청에 따라 'htmls' 폴더 내의 'index.html'을 지정합니다.
-    html_file_path = "methane/htmls/index2.html"
+    html_file_path = "methane/htmls/real.html"
 
     # HTML 파일을 읽어와서 앱에 표시합니다.
     try:
