@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보과제연구 계획서: 독서 감정 지도 시스템</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font (Tailwind default) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f8f8; /* Light gray background for Notion feel */
+        }
+        .section-card {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1.5rem; /* Rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Soft shadow */
+            margin-bottom: 2.5rem;
+        }
+        .accent-color {
+            color: #0ea5e9; /* Sky blue */
+        }
+        .accent-bg {
+            background-color: #e0f2fe; /* Light sky blue */
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-md p-6 sm:p-10 border-b border-gray-200">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">
+                독서 감정 데이터를 활용한 개인 맞춤형 감정 지도 시스템 개발
+            </h1>
+            <h2 class="text-xl sm:text-2xl font-semibold accent-color mb-4">
+                정보과제연구 계획서
+            </h2>
+            <p class="text-gray-500 mt-2">
+                연구자: [당신의 이름]
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto py-8 sm:py-12 px-4">
+
+        <!-- Section 1: 연구를 시작하게 된 계기 (서론) -->
+        <div class="section-card">
+            <h2 class="flex items-center text-2xl font-bold mb-4 pb-2 border-b-2 border-sky-100 accent-color">
+                <!-- 💡 Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3"><path d="M12 2a5 5 0 0 0-5 5c0 1.25.25 2.5 1 3.5L12 18l4-7.5c.75-1 1-2.25 1-3.5a5 5 0 0 0-5-5z"/><circle cx="12" cy="7" r="3"/></svg>
+                연구를 시작하게 된 계기
+            </h2>
+            <p class="text-gray-700 leading-relaxed">
+                개인적으로 독서 후의 복잡한 감정들이 사라져 아쉬웠던 경험을 바탕으로, 정보과학 기술을 활용해 이처럼 휘발되기 쉬운 정서적 경험을 기록하고 객관화하는 시스템을 개발하고자 했습니다. 나아가, 이 시스템이 비대면 시대에 사람들이 자신의 감정을 성찰하고 심리적 안정감을 얻도록 돕는 **일상 속의 자가 치유 도구**가 될 수 있다는 사회적 가치에 주목하여 연구를 시작했습니다.
+            </p>
+        </div>
+
+        <!-- Section 2: 연구 목적 -->
+        <div class="section-card">
+            <h2 class="flex items-center text-2xl font-bold mb-4 pb-2 border-b-2 border-sky-100 accent-color">
+                <!-- 🎯 Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                연구 목적
+            </h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+                독서 후 텍스트 데이터에 자연어 처리 및 감성 분석 기술을 적용하여 독자의 복합적인 감정 상태를 정량적으로 분석하고 취향 변화 패턴을 탐색한다. 이 분석 결과를 기반으로 개인이 자신의 정서적 경험을 성찰하고 이해하도록 돕는 시각화된 **'독서 감정 지도 시스템' 프로토타입을 개발한다.**
+            </p>
+        </div>
+
+        <!-- Section 3: 연구 질문 목록 -->
+        <div class="section-card">
+            <h2 class="flex items-center text-2xl font-bold mb-4 pb-2 border-b-2 border-sky-100 accent-color">
+                <!-- ❓ Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+                연구 질문 목록 (핵심 질문)
+            </h2>
+            <ul class="list-none space-y-3 pl-0">
+                <li class="p-3 accent-bg rounded-lg border-l-4 border-sky-500">
+                    <span class="font-semibold text-gray-800">1.</span> 독서 후 리뷰 텍스트에서 '위로', '불안' 등 복합적인 감정 상태를 **어느 정도의 정확도로 분류하고 정량화**할 수 있는가?
+                </li>
+                <li class="p-3 accent-bg rounded-lg border-l-4 border-sky-500">
+                    <span class="font-semibold text-gray-800">2.</span> 정량화된 감정 데이터의 변화 패턴이 독자의 다음 도서 선택을 예측하는 데 **기존 추천 알고리즘보다 더 효과적인가?**
+                </li>
+                <li class="p-3 accent-bg rounded-lg border-l-4 border-sky-500">
+                    <span class="font-semibold text-gray-800">3.</span> 개발된 '독서 감정 지도' 시각화 시스템이 독서 경험에 대한 사용자의 **자기 성찰과 이해를 얼마나 향상**시키는가?
+                </li>
+                <li class="p-3 accent-bg rounded-lg border-l-4 border-sky-500">
+                    <span class="font-semibold text-gray-800">4.</span> 감정 상태를 반영한 도서 큐레이션이 기존 장르 기반 추천보다 독자의 **정서적 만족도를 더 높이는가?**
+                </li>
+            </ul>
+        </div>
+
+        <!-- Section 4: 이론적 배경 및 핵심 기술 -->
+        <div class="section-card">
+            <h2 class="flex items-center text-2xl font-bold mb-4 pb-2 border-b-2 border-sky-100 accent-color">
+                <!-- 📚 Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V5H6.5A2.5 2.5 0 0 0 4 7.5v12z"/></svg>
+                이론적 배경 및 핵심 기술
+            </h2>
+            <p class="text-gray-700 leading-relaxed">
+                이 연구는 독자 리뷰 텍스트에서 감정을 추출하고 수치화하는 **자연어 처리(NLP) 및 감성 분석** 기술, 시간적 흐름에 따른 감정 변화를 추적하는 **시계열 데이터 분석** 기술, 그리고 결과를 직관적으로 보여주는 **데이터 시각화** 기법을 핵심적으로 활용한다. 본 연구의 학문적 배경은 사용자의 감정 상태를 고려하는 **감성 기반 추천 시스템**과 텍스트 분석을 통한 **독서 패턴 분석**에 대한 기존 연구들을 중심으로 탐색된다.
+            </p>
+        </div>
+
+        <!-- Section 5: 연구 계획 (대상, 순서, 일정) -->
+        <div class="section-card">
+            <h2 class="flex items-center text-2xl font-bold mb-4 pb-2 border-b-2 border-sky-100 accent-color">
+                <!-- 🔬 Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3"><path d="M14.5 4a3 3 0 0 0-3 3v8.5a3 3 0 1 1-2.5 0V7a5 5 0 0 1 10 0v8.5a7 7 0 1 1-5 0V7a3 3 0 0 0-3-3z"/></svg>
+                연구 대상, 순서 및 일정 계획
+            </h2>
+
+            <!-- 대상 -->
+            <h3 class="text-xl font-semibold mb-2 text-gray-800 mt-6">연구 대상</h3>
+            <p class="text-gray-600 mb-4 p-3 border border-gray-200 rounded-lg">
+                주요 데이터 확보를 위해 **온라인 독서 커뮤니티의 리뷰 작성자**를 대상으로 하며, 개발된 시스템의 평가를 위해 **소수의 자발적 참여자**를 활용한다.
+            </p>
+
+            <!-- 순서 및 방법 -->
+            <h3 class="text-xl font-semibold mb-2 text-gray-800 mt-6">연구 순서 및 방법</h3>
+            <p class="text-gray-600 mb-4 p-3 border border-gray-200 rounded-lg">
+                웹 크롤링으로 감정 데이터를 수집하고, **자연어 처리(NLP) 모델로 감정을 분류**하며, **시계열 분석**을 통해 감정 패턴을 파악한 후, 이를 시각화된 **시스템 프로토타입으로 구현하고 최종 평가**한다.
+            </p>
+
+            <!-- 일정 계획 -->
+            <h3 class="text-xl font-semibold mb-3 text-gray-800 mt-6">연구 일정 계획 (4주차)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="font-bold text-yellow-800">1주차 (9/15~9/21)</p>
+                    <p class="text-sm text-gray-700">데이터 수집 환경 구축 및 정제 / 샘플 데이터 라벨링 완료.</p>
+                </div>
+                <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="font-bold text-yellow-800">2주차 (9/22~9/28)</p>
+                    <p class="text-sm text-gray-700">핵심 모델 개발 및 학습 / NLP 감정 분류 모델 설계 및 감정 정량화 진행.</p>
+                </div>
+                <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="font-bold text-yellow-800">3주차 (9/29~10/5)</p>
+                    <p class="text-sm text-gray-700">시스템 시각화 및 구현 / 감정 패턴 분석 및 '감정 지도' 프로토타입 완성.</p>
+                </div>
+                <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                    <p class="font-bold text-yellow-800">4주차 (10/6~10/12)</p>
+                    <p class="text-sm text-gray-700">시스템 평가 및 보고서 작성 / 사용자 테스트 및 최종 보고서 완성.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 6: 기대 효과 -->
+        <div class="section-card">
+            <h2 class="flex items-center text-2xl font-bold mb-4 pb-2 border-b-2 border-sky-100 accent-color">
+                <!-- ✨ Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3"><path d="M2 12s3 6 10 6 10-6 10-6-3-6-10-6-10 6-10 6z"/><circle cx="12" cy="12" r="3"/></svg>
+                연구의 기대 효과
+            </h2>
+            <p class="text-gray-700 leading-relaxed mb-2">
+                본 연구는 **감성 분석과 시계열 데이터 분석 기술**을 통해 독서 경험을 정량화하고 개인의 정서적 변화를 성찰하도록 도와, **정보과학과 인문학의 융합**을 통한 새로운 학문적 방법론을 제시한다.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+                나아가, 개발된 '감정 지도 시스템'은 사용자의 심리적 니즈를 충족시키는 **맞춤형 자가 치유 도구** 역할을 수행하여 사회적 및 실용적 가치를 창출할 것이다.
+            </p>
+        </div>
+
+        <!-- Section 7: 참고 문헌 -->
+        <div class="section-card">
+            <h2 class="flex items-center text-2xl font-bold mb-4 pb-2 border-b-2 border-sky-100 accent-color">
+                <!-- 🔗 Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 mr-3"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                연구 참고 논문 (저자 및 제목)
+            </h2>
+            <ul class="list-disc space-y-2 pl-5 text-gray-700">
+                <li>**신현식, 최명렬 (2021)**: 「BERT 기반 감성분석을 이용한 추천시스템」 논문은 텍스트 감성 분석을 추천 시스템에 적용하는 기술적 기반을 제공합니다.</li>
+                <li>**Gabb, J.와 K. L. Molyneaux (2014)**: 「The Uses of Emotion Maps in Research and Clinical Practice with Families and Couples」 논문은 '감정 지도'가 자기 성찰과 임상적 가치를 지닌 시각화 도구임을 보여주는 이론적 근거가 됩니다.</li>
+                <li>**Nummenmaa, L. 외 (2014)**: 「Bodily maps of emotions」 논문은 복합적인 감정 상태가 시각적 형태로 매핑될 수 있다는 기초 과학적 타당성을 제시합니다.</li>
+            </ul>
+        </div>
+
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-100 p-6 sm:p-8 border-t border-gray-200">
+        <div class="max-w-4xl mx-auto text-center text-gray-500 text-sm">
+            <p>&copy; 2025 정보과제연구 계획서. 모든 단계가 성공적으로 완료되기를 응원합니다!</p>
+        </div>
+    </footer>
+
+</body>
+</html>
