@@ -9,7 +9,7 @@ def main():
 
     # 웹페이지의 제목을 설정합니다.
     st.set_page_config(
-        page_title="조추첨",
+        page_title="통합",
         layout="wide",
     )
 
