@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 통합 대시보드</title>
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* 전체 스크롤 방지 */
+            height: 100vh;
+            background-color: #f7f9fc;
+        }
+        /* iframe 스타일: 꽉 채우기 */
+        #contentFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: white;
+        }
+        /* 모바일 환경에서 배너가 화면 전체를 덮도록 설정 */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 10;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            #sidebar.open {
+                transform: translateX(0);
+                box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+            }
+            #contentArea {
+                padding-top: 56px; /* 헤더 높이만큼 여백 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Grid Layout (Desktop: Sidebar + Content) -->
+    <div class="h-full flex flex-col md:flex-row">
+
+        <!-- Sidebar (Left Navigation) -->
+        <aside id="sidebar" class="bg-white w-full md:w-64 flex-shrink-0 border-r border-gray-200 h-full p-4 overflow-y-auto md:relative">
+            <h1 class="text-xl font-bold text-sky-600 mb-6 border-b pb-2">통합 프로젝트 목록</h1>
+            
+            <!-- Navigation Links will be injected here by JavaScript -->
+            <nav id="navLinks" class="space-y-2"></nav>
+
+            <div class="mt-8 pt-4 border-t text-sm text-gray-400">
+                <p>GitHub & Streamlit 기반 프로젝트</p>
+                <p class="text-xs mt-1">iframe을 통해 외부 앱 로드</p>
+            </div>
+        </aside>
+
+        <!-- Content Area (Header + Iframe) -->
+        <div id="contentArea" class="flex-grow flex flex-col h-full">
+            
+            <!-- Mobile Header and Menu Button -->
+            <header class="md:hidden bg-white shadow-md p-3 flex justify-between items-center flex-shrink-0">
+                <h2 class="text-lg font-semibold text-gray-800">대시보드</h2>
+                <button id="menuButton" class="p-2 rounded-lg bg-sky-50 text-sky-600">
+                    <!-- Menu Icon (Hamburger) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+            </header>
+
+            <!-- Main Content Iframe -->
+            <div class="flex-grow">
+                <iframe id="contentFrame" title="프로젝트 콘텐츠 영역"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. 사용자님의 4가지 프로젝트 정보를 여기에 입력해 주세요!
+        // title: 사이드바에 표시될 이름
+        // url: 실제 Streamlit 또는 GitHub Pages 앱의 URL
+        const APPS = [
+            { id: 'app1', title: 'Streamlit App 1: 독서 감정 분석', url: 'https://placehold.co/400x300/e0f2fe/0369a1?text=App+1+Placeholder' },
+            { id: 'app2', title: 'Streamlit App 2: 도서 추천 시스템', url: 'https://placehold.co/400x300/e0f2fe/0369a1?text=App+2+Placeholder' },
+            { id: 'app3', title: 'Streamlit App 3: NLP 모델 시연', url: 'https://placehold.co/400x300/e0f2fe/0369a1?text=App+3+Placeholder' },
+            { id: 'app4', title: 'Streamlit App 4: 사용자 데이터 시각화', url: 'https://placehold.co/400x300/e0f2fe/0369a1?text=App+4+Placeholder' }
+        ];
+
+        // 2. DOM 요소 참조
+        const navLinksContainer = document.getElementById('navLinks');
+        const contentFrame = document.getElementById('contentFrame');
+        const sidebar = document.getElementById('sidebar');
+        const menuButton = document.getElementById('menuButton');
+        let activeAppId = APPS[0].id;
+
+        // 3. 앱 로드 함수 (iframe src 업데이트)
+        function loadApp(appId) {
+            const app = APPS.find(a => a.id === appId);
+            if (app) {
+                // iframe의 주소를 새 앱의 URL로 변경
+                contentFrame.src = app.url;
+                
+                // 현재 활성화된 앱 ID 업데이트
+                activeAppId = appId;
+                
+                // 사이드바의 활성화 스타일 업데이트
+                updateActiveLink();
+
+                // 모바일에서 메뉴 닫기
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('open');
+                }
+            } else {
+                console.error(`App with ID ${appId} not found.`);
+            }
+        }
+
+        // 4. 사이드바 활성화 스타일 업데이트 함수
+        function updateActiveLink() {
+            navLinksContainer.querySelectorAll('a').forEach(link => {
+                if (link.dataset.id === activeAppId) {
+                    // 활성화된 링크 스타일
+                    link.className = 'flex items-center p-3 rounded-lg bg-sky-100 text-sky-700 font-semibold transition duration-150';
+                } else {
+                    // 비활성화된 링크 스타일
+                    link.className = 'flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150';
+                }
+            });
+        }
+
+        // 5. 사이드바 링크 렌더링
+        function renderNavLinks() {
+            APPS.forEach(app => {
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = app.title;
+                link.dataset.id = app.id;
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loadApp(app.id);
+                });
+                navLinksContainer.appendChild(link);
+            });
+            // 초기 활성화 스타일 적용
+            updateActiveLink();
+        }
+
+        // 6. 모바일 메뉴 토글 이벤트 리스너
+        if (menuButton) {
+            menuButton.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+            // 모바일에서 콘텐츠 클릭 시 사이드바 닫기 (선택 사항)
+            contentFrame.addEventListener('click', () => {
+                if (sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                }
+            });
+        }
+
+
+        // 7. 페이지 로드 시 초기화
+        window.onload = function() {
+            renderNavLinks();
+            // 첫 번째 앱을 기본으로 로드
+            if (APPS.length > 0) {
+                loadApp(APPS[0].id);
+            }
+        };
+
+    </script>
+
+</body>
+</html>
