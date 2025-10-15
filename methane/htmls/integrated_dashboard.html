@@ -12,16 +12,13 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* 전체 스크롤 방지 */
             height: 100vh;
             background-color: #f7f9fc;
         }
-        /* iframe 스타일: 꽉 채우기 */
-        #contentFrame {
-            width: 100%;
+        /* Iframe 제거 대신, 전체 화면을 사이드바와 콘텐츠 영역으로 나눔 */
+        #mainContainer {
+            display: flex;
             height: 100%;
-            border: none;
-            background-color: white;
         }
         /* 모바일 환경에서 배너가 화면 전체를 덮도록 설정 */
         @media (max-width: 768px) {
@@ -37,35 +34,36 @@
                 transform: translateX(0);
                 box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
             }
-            #contentArea {
-                padding-top: 56px; /* 헤더 높이만큼 여백 */
-            }
+        }
+        .link-style {
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <!-- Main Grid Layout (Desktop: Sidebar + Content) -->
-    <div class="h-full flex flex-col md:flex-row">
+    <div id="mainContainer" class="flex-col md:flex-row">
 
         <!-- Sidebar (Left Navigation) -->
         <aside id="sidebar" class="bg-white w-full md:w-64 flex-shrink-0 border-r border-gray-200 h-full p-4 overflow-y-auto md:relative">
             <h1 class="text-xl font-bold text-sky-600 mb-6 border-b pb-2">통합 프로젝트 목록</h1>
             
-            <!-- Navigation Links will be injected here by JavaScript -->
+            <!-- Navigation Links -->
             <nav id="navLinks" class="space-y-2"></nav>
 
             <div class="mt-8 pt-4 border-t text-sm text-gray-400">
-                <p>GitHub & Streamlit 기반 프로젝트</p>
-                <p class="text-xs mt-1">iframe을 통해 외부 앱 로드</p>
+                <p>Streamlit 프로젝트 링크</p>
+                <p class="text-xs mt-1">클릭 시 새 탭에서 열립니다.</p>
             </div>
         </aside>
 
-        <!-- Content Area (Header + Iframe) -->
-        <div id="contentArea" class="flex-grow flex flex-col h-full">
+        <!-- Content Area (Instruction/Welcome) -->
+        <!-- iframe 대신 환영 메시지를 넣어 사용자가 클릭 유도 -->
+        <div id="contentArea" class="flex-grow flex flex-col justify-center items-center p-8">
             
             <!-- Mobile Header and Menu Button -->
-            <header class="md:hidden bg-white shadow-md p-3 flex justify-between items-center flex-shrink-0">
+            <header class="md:hidden bg-white shadow-md p-3 flex justify-between items-center w-full absolute top-0 left-0 flex-shrink-0">
                 <h2 class="text-lg font-semibold text-gray-800">대시보드</h2>
                 <button id="menuButton" class="p-2 rounded-lg bg-sky-50 text-sky-600">
                     <!-- Menu Icon (Hamburger) -->
@@ -73,17 +71,21 @@
                 </button>
             </header>
 
-            <!-- Main Content Iframe -->
-            <div class="flex-grow">
-                <iframe id="contentFrame" title="프로젝트 콘텐츠 영역"></iframe>
+            <div class="text-center p-8 bg-white rounded-xl shadow-lg max-w-lg mt-16 md:mt-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-4"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">포트폴리오에 오신 것을 환영합니다!</h3>
+                <p class="text-gray-600 mb-6">
+                    왼쪽 사이드바에서 프로젝트 목차를 선택하시면, 해당 Streamlit 애플리케이션이 **새로운 브라우저 탭**으로 열립니다.
+                </p>
+                <p class="text-sm text-gray-500">
+                    (Streamlit의 보안 정책으로 인해 페이지 내 임베딩이 불가능하여 새 탭 열기로 전환했습니다.)
+                </p>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. 사용자님의 4가지 프로젝트 정보를 여기에 입력해 주세요!
-        // title: 사이드바에 표시될 이름
-        // url: 실제 Streamlit 또는 GitHub Pages 앱의 URL
+        // 1. 사용자님의 4가지 프로젝트 정보
         const APPS = [
             { id: 'app1', title: 'Streamlit App 1: 오디오북', url: 'https://audio-book-bonobono.streamlit.app/' },
             { id: 'app2', title: 'Streamlit App 2: 조추첨', url: 'https://randomdomdomdd.streamlit.app/' },
@@ -93,22 +95,19 @@
 
         // 2. DOM 요소 참조
         const navLinksContainer = document.getElementById('navLinks');
-        const contentFrame = document.getElementById('contentFrame');
         const sidebar = document.getElementById('sidebar');
         const menuButton = document.getElementById('menuButton');
-        let activeAppId = APPS[0].id;
+        let activeAppId = APPS[0].id; // 초기값 설정
 
-        // 3. 앱 로드 함수 (iframe src 업데이트)
+        // 3. 앱 로드 함수 (새 탭에서 열기)
         function loadApp(appId) {
             const app = APPS.find(a => a.id === appId);
             if (app) {
-                // iframe의 주소를 새 앱의 URL로 변경
-                contentFrame.src = app.url;
+                // iframe 대신 새 창에서 앱 URL을 엽니다.
+                window.open(app.url, '_blank'); 
                 
-                // 현재 활성화된 앱 ID 업데이트
+                // 현재 활성화된 앱 ID 업데이트 및 스타일 업데이트
                 activeAppId = appId;
-                
-                // 사이드바의 활성화 스타일 업데이트
                 updateActiveLink();
 
                 // 모바일에서 메뉴 닫기
@@ -125,10 +124,10 @@
             navLinksContainer.querySelectorAll('a').forEach(link => {
                 if (link.dataset.id === activeAppId) {
                     // 활성화된 링크 스타일
-                    link.className = 'flex items-center p-3 rounded-lg bg-sky-100 text-sky-700 font-semibold transition duration-150';
+                    link.className = 'link-style flex items-center p-3 rounded-lg bg-sky-100 text-sky-700 font-semibold transition duration-150';
                 } else {
                     // 비활성화된 링크 스타일
-                    link.className = 'flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150';
+                    link.className = 'link-style flex items-center p-3 rounded-lg text-gray-700 hover:bg-gray-100 transition duration-150';
                 }
             });
         }
@@ -142,11 +141,11 @@
                 link.dataset.id = app.id;
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    loadApp(app.id);
+                    loadApp(app.id); // 새 탭에서 열기
                 });
                 navLinksContainer.appendChild(link);
             });
-            // 초기 활성화 스타일 적용
+            // 초기 활성화 스타일 적용 (첫 번째 링크 활성화 상태 유지)
             updateActiveLink();
         }
 
@@ -155,22 +154,11 @@
             menuButton.addEventListener('click', () => {
                 sidebar.classList.toggle('open');
             });
-            // 모바일에서 콘텐츠 클릭 시 사이드바 닫기 (선택 사항)
-            contentFrame.addEventListener('click', () => {
-                if (sidebar.classList.contains('open')) {
-                    sidebar.classList.remove('open');
-                }
-            });
         }
-
 
         // 7. 페이지 로드 시 초기화
         window.onload = function() {
             renderNavLinks();
-            // 첫 번째 앱을 기본으로 로드
-            if (APPS.length > 0) {
-                loadApp(APPS[0].id);
-            }
         };
 
     </script>
